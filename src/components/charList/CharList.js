@@ -39,6 +39,7 @@ renderItems(arr) {
       return (
           <li 
               className="char__item"
+              onClick={() => this.props.charId(item.id)}
               key={item.id}>
                   <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                   <div className="char__name">{item.name}</div>
