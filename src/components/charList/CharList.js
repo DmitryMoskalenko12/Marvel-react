@@ -1,5 +1,5 @@
 import './charList.scss';
-import {Component} from 'react';
+import {Component, createRef} from 'react';
 import MarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import PropTypes from 'prop-types';
@@ -62,9 +62,19 @@ onCharListLoading = () =>{
     this.onRequest(this.state.offset);
   }
 } */
+setItems = []
 
+onSetRef = (id) =>{
+ this.setItems.push(id)
+}
+
+onFocusChange = (id) =>{
+  this.setItems.forEach(item => item.classList.remove('char__item_selected'));
+  this.setItems[id].classList.add('char__item_selected');
+  this.setItems[id].focus();
+}
 renderItems(arr) {
-  const items =  arr.map((item) => {
+  const items =  arr.map((item, i) => {
       let imgStyle = {'objectFit' : 'cover'};
       if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
           imgStyle = {'objectFit' : 'unset'};
@@ -73,8 +83,17 @@ renderItems(arr) {
       return (
           <li 
               className="char__item"
-              onClick={() => this.props.charId(item.id)}
-              key={item.id}>
+              onClick={() => {this.props.charId(item.id);
+              this.onFocusChange(i)}}
+              tabIndex={0}
+              ref={this.onSetRef}
+              key={item.id}
+              onKeyPress = {(e) =>{
+               if (e.key === ' ' || e.key === 'Enter') {
+                this.props.charId(item.id);
+                this.onFocusChange(i);
+               }
+              }}>
                   <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                   <div className="char__name">{item.name}</div>
           </li>
