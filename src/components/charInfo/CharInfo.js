@@ -4,6 +4,7 @@ import Skeleton from '../skeleton/Skeleton';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
+import PropTypes from 'prop-types';
 
 
 class CharInfo extends Component {
@@ -84,7 +85,7 @@ const comic = comics.map((elem, i) =>{
 const imageStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ? {objectFit: 'contain'} : {objectFit: 'cover'} ;
 
 return(
-  <div>
+  <>
      <div className="char__basics">
               <img style={imageStyle} src={thumbnail} alt={name}/>
               <div>
@@ -104,11 +105,17 @@ return(
           </div>
           <div className="char__comics">Comics:</div>
           <ul className="char__comics-list">
+            {comics.length === 0 ? 'The character has no comics' : null}
             {comic}
+            
           </ul>
-  </div>
+  </>
 )
 
+}
+
+CharInfo.propTypes = {
+  charIdRes: PropTypes.number
 }
 
 export default CharInfo;
