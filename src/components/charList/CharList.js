@@ -1,5 +1,5 @@
 import './charList.scss';
-import {Component, createRef} from 'react';
+import {Component} from 'react';
 import MarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import PropTypes from 'prop-types';

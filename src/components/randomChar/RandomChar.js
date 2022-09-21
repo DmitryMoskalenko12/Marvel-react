@@ -33,7 +33,8 @@ this.setState({char, loading: false})
 }
 
  updateChar = () => {
-  const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000) ;
+  const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+  this.setState({error: false})
   this.onCharLoading();
   this.marvelService
       .getCharacter(id)

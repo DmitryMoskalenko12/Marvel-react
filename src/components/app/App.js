@@ -6,6 +6,7 @@ import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 import {Component} from 'react';
 import decoration from '../../resources/img/vision.png';
 
+
 class App extends Component {
   state = {
     charId: null
