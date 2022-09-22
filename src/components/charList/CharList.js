@@ -1,79 +1,60 @@
 import './charList.scss';
-import {Component} from 'react';
-import MarvelService from '../../services/MarvelService';
+import {useState, useEffect, useRef} from 'react';
+import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 
-class CharList extends Component {
-  state = {
-    charList: [],
-    loading: true,
-    error: false,
-    offset: 210,
-    newItemLoading: false,
-    charEnded: false
-  }
+const CharList = (props) => {
+  const [charList, setCharList] = useState([]);
+  const [offset, setOffset] = useState(210);
+  const [newItemLoading, setNewItemLoading] = useState(false);
+  const [charEnded, setCharEnded] = useState(false);
 
-  marvelService = new MarvelService();
+  const {loading, error, getAllCharacters} = useMarvelService();
+  
+  useEffect(() =>{
+    onRequest(offset, true);
+    //eslint-disable-next-line
+  },[])
 
-componentDidMount(){
-  this.onRequest();
   /* window.addEventListener('scroll', ()=> this.onScroll()) */
-}
+
 /* conponentWillUnmount(){
   window.removeEventListener('scroll', ()=> this.onScroll())
 } */
 
-onCharListLoaded = (newCharList) => {
+const onRequest = (offset, initial) =>{
+  initial ? setNewItemLoading(false) : setNewItemLoading(true);
+      getAllCharacters(offset)
+      .then(onCharListLoaded)
+
+}
+const onCharListLoaded = (newCharList) => {
   let ended = false;
   if(newCharList.length < 9){
     ended = true;
   }
-  this.setState(({offset, charList})=>({
-    charList: [...charList, ...newCharList],
-    offset: offset + 9, 
-    loading: false,
-    newItemLoading: false,
-    charEnded: ended
-    }))
+  setCharList((charList) => [...charList, ...newCharList]);
+  setOffset((offset) => offset + 9);
+  setNewItemLoading(false);
+  setCharEnded(ended);
 }
 
-onCharListError = () =>{
-  this.setState({loading: false, error: true})
-}
-
-onRequest = (offset) =>{
-  this.onCharListLoading();
-  this.marvelService.getAllCharacters(offset)
-      .then(this.onCharListLoaded)
-      .catch(this.onCharListError)
-
-}
-
-onCharListLoading = () =>{
-  this.setState({
-    newItemLoading: true
-  })
-}
 
 /* onScroll = () =>{
   if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 3) {
     this.onRequest(this.state.offset);
   }
 } */
-setItems = []
+const setItems = useRef([])
 
-onSetRef = (id) =>{
- this.setItems.push(id)
+const onFocusChange = (id) =>{
+  setItems.current.forEach(item => item.classList.remove('char__item_selected'));
+  setItems.current[id].classList.add('char__item_selected');
+  setItems.current[id].focus();
 }
-
-onFocusChange = (id) =>{
-  this.setItems.forEach(item => item.classList.remove('char__item_selected'));
-  this.setItems[id].classList.add('char__item_selected');
-  this.setItems[id].focus();
-}
-renderItems(arr) {
+function renderItems (arr) {
   const items =  arr.map((item, i) => {
       let imgStyle = {'objectFit' : 'cover'};
       if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
@@ -83,15 +64,15 @@ renderItems(arr) {
       return (
           <li 
               className="char__item"
-              onClick={() => {this.props.charId(item.id);
-              this.onFocusChange(i)}}
+              onClick={() => {props.charId(item.id);
+              onFocusChange(i)}}
               tabIndex={0}
-              ref={this.onSetRef}
+              ref={(el => setItems.current[i] = el)}
               key={item.id}
               onKeyPress = {(e) =>{
                if (e.key === ' ' || e.key === 'Enter') {
-                this.props.charId(item.id);
-                this.onFocusChange(i);
+                 props.charId(item.id);
+                 onFocusChange(i);
                }
               }}>
                   <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
@@ -107,19 +88,18 @@ renderItems(arr) {
   )
 }
 
-  render(){
-    const {charList, loading, error, offset, newItemLoading, charEnded} = this.state;
-    const items = this.renderItems(charList);
+    const items = renderItems(charList);
     const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading ? <Spinner/> : null;
-    const content = !(loading || error) ? items : null;
+    const spinner = loading && !newItemLoading ? <Spinner/> : null;
+    /* const content = !(loading || error) ? items : null; */
 
     return (
         <div className="char__list">
             {errorMessage}
             {spinner}
-            {content}
-            <button onClick={() => this.onRequest(offset)} 
+            {/* {content} */}
+            {items}
+            <button onClick={() => onRequest(offset)} 
                     className="button button__main button__long"
                     disabled ={newItemLoading}
                     style = {{'display': charEnded ? 'none' : 'block'}}
@@ -130,7 +110,6 @@ renderItems(arr) {
     )
 }
     
-}
 CharList.propTypes = {
   charId: PropTypes.func.isRequired
 }

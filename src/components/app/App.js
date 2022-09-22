@@ -3,41 +3,45 @@ import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
-import {Component} from 'react';
+import {useState} from 'react';
 import decoration from '../../resources/img/vision.png';
+import ComicsList from "../comicsList/ComicsList";
+import AppBanner from "../appBanner/AppBanner";
 
 
-class App extends Component {
-  state = {
-    charId: null
+const App = () => {
+ const [charId, setCharId] = useState(null)
+
+ const onSetCharId = (charId) => {
+    setCharId(charId)
   }
 
-  onSetCharId = (charId) => {
-  this.setState({charId})
-  }
-
-  render(){
+  
     return (
       <div className="app">
           <AppHeader/>
           <main>
-            <ErrorBoundary>
+             <ErrorBoundary>
                <RandomChar/>
             </ErrorBoundary>
               <div className="char__content">
                 <ErrorBoundary>
-                   <CharList charId = {this.onSetCharId}/>
+                   <CharList charId = {onSetCharId}/>
                 </ErrorBoundary>
                 <ErrorBoundary>
-                  <CharInfo charIdRes = {this.state.charId}/>
-                </ErrorBoundary>
+                  <CharInfo charIdRes = {charId}/>
+                </ErrorBoundary> 
               </div>
               <img className="bg-decoration" src={decoration} alt="vision"/>
+                <AppBanner/>
+                <ErrorBoundary>
+                  <ComicsList/>
+                </ErrorBoundary>
           </main>
       </div>
   )
   }
     
-}
+
 
 export default App;

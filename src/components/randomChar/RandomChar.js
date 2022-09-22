@@ -1,50 +1,32 @@
 import './randomChar.scss';
-import {Component} from 'react';
-import MarvelService from '../../services/MarvelService';
+import {useState, useEffect} from 'react';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import mjolnir from '../../resources/img/mjolnir.png';
 
-class RandomChar extends Component {
-    state = {
-      char: {},
-      loading: true,
-      error: false
-    }
+const RandomChar = () => {
+    
+const [char, setChar] = useState({});
+  
+const {loading, error, getCharacter, clearError} =  useMarvelService();
 
- marvelService = new MarvelService();
+useEffect(() =>{
+  updateChar()
+  //eslint-disable-next-line
+},[])
 
-componentDidMount(){
-  this.updateChar()
+const onCharLoaded = (char) => {
+  setChar(char);
 }
 
-onError = () =>{
-this.setState({error: true, loading: false})
-}
-
-onCharLoading = () => {
-  this.setState({
-      loading: true
-  })
-}
-
-onCharLoaded = (char) => {
-this.setState({char, loading: false})
-}
-
- updateChar = () => {
+const updateChar = () => {
   const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-  this.setState({error: false})
-  this.onCharLoading();
-  this.marvelService
-      .getCharacter(id)
-      .then(this.onCharLoaded)
-      .catch(this.onError)
-      
+      clearError()
+       getCharacter(id)
+        .then(onCharLoaded)    
  }
 
-  render(){
-    const {char, loading, error} = this.state;
     const spinner = loading ? <Spinner/> : null;
     const fail = error ? <ErrorMessage/> : null;
     const content = !(loading || error) ? <View char = {char}/> : null
@@ -61,7 +43,7 @@ this.setState({char, loading: false})
               <p className="randomchar__title">
                   Or choose another one
               </p>
-              <button onClick={this.updateChar} className="button button__main">
+              <button onClick={updateChar} className="button button__main">
                   <div className="inner">try it</div>
               </button>
               <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
@@ -70,7 +52,7 @@ this.setState({char, loading: false})
   )
 }
     
-}
+
 const View = ({char}) =>{
   const {thumbnail, name, description, homepage, wiki} = char;
   const imageStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ? {objectFit: 'contain'} : {objectFit: 'cover'} ;

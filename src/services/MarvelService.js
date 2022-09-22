@@ -1,28 +1,31 @@
-class MarvelService {
-   _apiKey = 'apikey=cc870ad11d5b1c6ba492308627064f32';
-   _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-   _baseOffset = 210;
-getResource = async (url) => {
-  let res = await fetch(url);
+import { useHttp } from "../components/hooks/http.hooks";
 
-  if (!res.ok) {
-    throw new Error (`Could not fetch ${url}, status: ${res.status}`);
-  }
+const useMarvelService  = () =>{
+const _apiKey = 'apikey=cc870ad11d5b1c6ba492308627064f32';
+const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
+const _baseOffset = 210;
 
-  return await res.json();
+
+const {loading, request, error, clearError, setLoading} = useHttp();
+
+const getAllCharacters = async (offset = _baseOffset) =>{
+  const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`)
+  return res.data.results.map(_transformCharacter)
 }
-
-getAllCharacters = async (offset = this._baseOffset) =>{
-  const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`)
-  return res.data.results.map(this._transformCharacter)
-}
-getCharacter = async (id) =>{
-  const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apiKey}`)
-  return this._transformCharacter(res.data.results[0]);
+const getCharacter = async (id) =>{
+  const res = await request(`${_apiBase}characters/${id}?${_apiKey}`)
+  return _transformCharacter(res.data.results[0]);
 
 }
-
-_transformCharacter = (char) =>{
+const getAllComic = async (offset = 0) =>{
+  const res = await request(`${_apiBase}comics?limit=8&offset=${offset}&${_apiKey}`)
+  return res.data.results.map(_transformComic)
+}
+const getComic = async (id) => {
+  const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
+  return _transformComic(res.data.results[0]);
+}
+const _transformCharacter = (char) =>{
   return {
     id: char.id,
     name: char.name,
@@ -34,5 +37,26 @@ _transformCharacter = (char) =>{
   }
 }
 
+const _transformComic = (comic) =>{
+  return {
+    id: comic.id,
+    title: comic.title,
+    language: comic.textObjects.language || 'en-us',
+    description: comic.description || 'There is no description',
+    pageCount: comic.pageCount ? `${comic.pageCount} p.` : 'No information about the number of pages',
+    thumbnail: comic.thumbnail.path + '.' + comic.thumbnail.extension,
+    price: comic.prices[0].price ? `${comic.prices[0].price}$` : 'not available'
+  }
 }
-export default MarvelService;
+return{
+  getAllCharacters,
+  getCharacter,
+  loading,
+  error,
+  clearError,
+  getAllComic,
+  getComic
+  
+}
+}
+export default useMarvelService;

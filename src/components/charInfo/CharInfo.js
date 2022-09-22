@@ -1,59 +1,36 @@
 import './charInfo.scss';
-import {Component} from 'react';
+import {useState, useEffect} from 'react';
 import Skeleton from '../skeleton/Skeleton';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import PropTypes from 'prop-types';
 
 
-class CharInfo extends Component {
-  state = {
-    charId: null,
-    error: false,
-    loading: false
-  }
+ const CharInfo = (props) => {
+  const [charId, setCharId] = useState(null);
+  
+  const {loading, error, getCharacter, clearError} =  useMarvelService();
 
-  marvelServis = new MarvelService();
+  useEffect(() => {
+    CharInfoUpdate();
+    //eslint-disable-next-line
+  }, [props.charIdRes])
+ 
 
-  componentDidMount(){
-    this.CharInfoUpdate();
-  }
-
-  componentDidUpdate(prevProps){
-    if(this.props.charIdRes !== prevProps.charIdRes){
-     this.CharInfoUpdate();
-    }
-  }
-
-  CharInfoUpdate = () =>{
-
-    if(!this.props.charIdRes){
+  const CharInfoUpdate = () =>{
+    if(!props.charIdRes){
       return
     }
-
-    this.onCharLoading();
-
-    this.marvelServis
-        .getCharacter(this.props.charIdRes)
-        .then(this.setCharInfoId)
-        .catch(this.onSetErrorInfo)
+    clearError();
+         getCharacter(props.charIdRes)
+        .then(setCharInfoId)
   }
 
-  setCharInfoId = (charId) =>{
-    this.setState({charId, loading: false})
+  const setCharInfoId = (charId) =>{
+    setCharId(charId);
   }
-
-  onSetErrorInfo = () =>{
-    this.setState({error: true, loading: false})
-  }
-
-  onCharLoading = () =>{
-    this.setState({loading: true})
-  }
-  render(){
-   const {charId, error, loading} = this.state;
-
+  
    const skeleton = charId || error || loading ? null : <Skeleton/>;
    const fail = error ? <ErrorMessage/> : null;
    const spinner = loading ? <Spinner/> : null;
@@ -68,7 +45,7 @@ class CharInfo extends Component {
       </div>
   )
   } 
-}
+
 const View = ({charId}) => {
 const {name, description, thumbnail, comics, homepage, wiki} = charId;
 const comic = comics.map((elem, i) =>{
@@ -118,4 +95,4 @@ CharInfo.propTypes = {
   charIdRes: PropTypes.number
 }
 
-export default CharInfo;
+export default CharInfo; 
