@@ -1,5 +1,6 @@
 import './comicsList.scss';
 import {useState, useEffect} from 'react';
+import { Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -44,11 +45,11 @@ const ComicsList = () => {
       }
      return (
       <li key={i} className="comics__item" style={imgStyle}>
-        <a href="#">
+        <Link to={`/comic/${elem.id}`}>
             <img src={elem.thumbnail} alt={elem.title} className="comics__item-img"/>
             <div className="comics__item-name">{elem.title}</div>
             <div className="comics__item-price">{elem.price}</div>
-        </a>
+        </Link>
       </li>
      )
     })
