@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import { useState, useEffect } from 'react';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import {Helmet} from 'react-helmet';
 import Spinner from '../spinner/Spinner';
 import './singleComic.scss';
 
@@ -46,6 +47,13 @@ const View = ({comic}) =>{
   const {id, title, language, description, pageCount, thumbnail, price} = comic;
   return(
     <div key={id} className="single-comic">
+      <Helmet>
+    <meta
+      name="description"
+      content={`${title} comics book`}
+    />
+    <title>{title}</title>
+    </Helmet>
     <img src={thumbnail} alt={title} className="single-comic__img"/>
     <div className="single-comic__info">
         <h2 className="single-comic__name">{title}</h2>
