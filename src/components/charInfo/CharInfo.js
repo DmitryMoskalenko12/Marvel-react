@@ -1,8 +1,6 @@
 import './charInfo.scss';
 import {useState, useEffect} from 'react';
-import Skeleton from '../skeleton/Skeleton';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import setContent from '../utils/setContent';
 import useMarvelService from '../../services/MarvelService';
 import PropTypes from 'prop-types';
 
@@ -10,7 +8,7 @@ import PropTypes from 'prop-types';
  const CharInfo = (props) => {
   const [charId, setCharId] = useState(null);
   
-  const {loading, error, getCharacter, clearError} =  useMarvelService();
+  const {loading, error, getCharacter, clearError, process, setProcess} =  useMarvelService();
 
   useEffect(() => {
     CharInfoUpdate();
@@ -25,29 +23,31 @@ import PropTypes from 'prop-types';
     clearError();
          getCharacter(props.charIdRes)
         .then(setCharInfoId)
+        .then(() => setProcess('confirmed'))
   }
 
   const setCharInfoId = (charId) =>{
     setCharId(charId);
   }
-  
-   const skeleton = charId || error || loading ? null : <Skeleton/>;
+ 
+   /* const skeleton = charId || error || loading ? null : <Skeleton/>;
    const fail = error ? <ErrorMessage/> : null;
    const spinner = loading ? <Spinner/> : null;
-   const content = !(error || loading || !charId) ? <View charId = {charId}/> : null;
+   const content = !(error || loading || !charId) ? <View charId = {charId}/> : null; */
    
     return (
-      <div className="char__info">
-         {skeleton}
-         {fail}
+       <div className="char__info">
+         {setContent(process, View, charId)}
+         {/* {fail}
          {spinner}
-         {content}
+         {content} */}
       </div>
+        
   )
   } 
 
-const View = ({charId}) => {
-const {name, description, thumbnail, comics, homepage, wiki} = charId;
+const View = ({data}) => {
+const {name, description, thumbnail, comics, homepage, wiki} = data;
 const comic = comics.map((elem, i) =>{
   /* eslint-disable-next-line */
   if (i > 9) return

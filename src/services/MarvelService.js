@@ -6,7 +6,7 @@ const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
 const _baseOffset = 210;
 
 
-const {loading, request, error, clearError} = useHttp();
+const {loading, request, error, clearError, process, setProcess} = useHttp();
 
 const getAllCharacters = async (offset = _baseOffset) =>{
   const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`)
@@ -55,7 +55,9 @@ return{
   error,
   clearError,
   getAllComic,
-  getComic
+  getComic,
+  process,
+  setProcess
   
 }
 }
