@@ -1,10 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import { useState, useEffect } from 'react';
-import ErrorMessage from '../errorMessage/ErrorMessage';
 import {Helmet} from 'react-helmet';
-import Spinner from '../spinner/Spinner';
 import './singleComic.scss';
+import setContent from '../utils/setContent';
 
 
 const SingleComicPage = () => {
@@ -12,7 +11,7 @@ const SingleComicPage = () => {
 
   const [comic, setComic] = useState(null);
   
-  const {loading, error, getComic, clearError} =  useMarvelService();
+  const {getComic, clearError, process, setProcess} =  useMarvelService();
 
   useEffect(() => {
     comicInfoUpdate();
@@ -24,6 +23,7 @@ const SingleComicPage = () => {
     clearError();
          getComic(comicId)
         .then(setComicInfoId)
+        .then(() => setProcess('confirmed'))
   }
 
   const setComicInfoId = (comic) =>{
@@ -31,20 +31,21 @@ const SingleComicPage = () => {
   }
   
  
-   const fail = error ? <ErrorMessage/> : null;
+  /*  const fail = error ? <ErrorMessage/> : null;
    const spinner = loading ? <Spinner/> : null;
-   const content = !(error || loading || !comic) ? <View comic = {comic}/> : null;
+   const content = !(error || loading || !comic) ? <View comic = {comic}/> : null; */
    
     return (
        <>
-       {fail}
+       {setContent(process, View, comic)}
+     {/*   {fail}
        {spinner}
-       {content}
+       {content} */}
        </>
     )
 }
-const View = ({comic}) =>{
-  const {id, title, language, description, pageCount, thumbnail, price} = comic;
+const View = ({data}) =>{
+  const {id, title, language, description, pageCount, thumbnail, price} = data;
   return(
     <div key={id} className="single-comic">
       <Helmet>

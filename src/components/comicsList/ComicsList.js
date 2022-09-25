@@ -14,7 +14,22 @@ const ComicsList = () => {
   const [newItemLoading, setNewItemLoading] = useState(false);
   const [comicEnded, setComicEnded] = useState(false);
   
-  const {loading, error, getAllComic} = useMarvelService();
+  const {getAllComic, process, setProcess} = useMarvelService();
+
+  const setContent = (process, Component, newItemLoading ) => {
+    switch (process) {
+     case 'waiting':
+       return <Spinner/>;
+     case 'loading':
+       return newItemLoading ? <Component/> : <Spinner/>;
+     case 'confirmed':
+       return <Component/>;   
+     case 'error':
+       return <ErrorMessage/>;   
+     default:
+       throw new Error('Unexpected process state');
+    }
+   }
 
   useEffect(() =>{
     onRequest(offset, true);
@@ -25,6 +40,7 @@ const ComicsList = () => {
     initial ? setNewItemLoading(false) : setNewItemLoading(true);
      getAllComic(offset)
     .then(onComicLoaded)
+    .then(() => setProcess('confirmed'))
   }
 
   const onComicLoaded = (newComic) =>{
@@ -60,15 +76,16 @@ const ComicsList = () => {
       </ul>
     )
   }
-  const content = renderItems(comic);
+  /* const content = renderItems(comic);
   const spinner = loading && !newItemLoading ? <Spinner/> : null;
-  const fail = error ? <ErrorMessage/> : null;
+  const fail = error ? <ErrorMessage/> : null; */
 
   return (
-    <div className="comics__list">          
-            {content}
+    <div className="comics__list">  
+    {setContent(process, () => renderItems(comic), newItemLoading)}        
+           {/*  {content}
             {spinner}
-            {fail}       
+            {fail}  */}      
         <button onClick={() => onRequest(offset)} 
                 className="button button__main button__long"
                 tabIndex={0}
