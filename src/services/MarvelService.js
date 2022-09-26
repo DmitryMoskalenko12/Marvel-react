@@ -8,6 +8,12 @@ const _baseOffset = 210;
 
 const { request, clearError, process, setProcess} = useHttp();
 
+const getCharacterByName = async (name) =>{
+  const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`)
+  return res.data.results.map(_transformCharacter)
+}
+
+
 const getAllCharacters = async (offset = _baseOffset) =>{
   const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`)
   return res.data.results.map(_transformCharacter)
@@ -55,7 +61,8 @@ return{
   getAllComic,
   getComic,
   process,
-  setProcess
+  setProcess,
+  getCharacterByName
   
 }
 }

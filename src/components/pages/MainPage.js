@@ -5,6 +5,8 @@ import CharInfo from "../charInfo/CharInfo";
 import decoration from '../../resources/img/vision.png';
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 import {Helmet} from 'react-helmet';
+import CharacterSearchForm from '../characterSearchForm/CharacterSearchForm';
+
 
 const MainPage = () =>{
 
@@ -29,9 +31,16 @@ const MainPage = () =>{
       <ErrorBoundary>
         <CharList charId = {onSetCharId}/>
       </ErrorBoundary>
+      <div>
       <ErrorBoundary>
         <CharInfo charIdRes = {charId}/>
       </ErrorBoundary> 
+      
+      <ErrorBoundary>
+        <CharacterSearchForm/>
+      </ErrorBoundary>
+      </div>
+     
     </div>
    <img className="bg-decoration" src={decoration} alt="vision"/>
    </>
