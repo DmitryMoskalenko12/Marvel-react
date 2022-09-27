@@ -14,7 +14,7 @@ const[charInfo, setCharInfoId] = useState(null);
 useEffect(() =>{
   onUpdate(id)
   //eslint-disable-next-line
-},[])
+},[id])
 
 const onUpdate = (info)=>{
   getCharacter(info)
